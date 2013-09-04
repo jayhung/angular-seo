@@ -3,6 +3,10 @@ Angular-SEO
 
 SEO for AngularJS apps made easy. Based on [PhantomJS](http://phantomjs.org/) and [yearofmoo's article](http://www.yearofmoo.com/2012/11/angularjs-and-seo.html).
 
+This version has an updated and detailed Nginx file that passes request information to phantomjs
+
+Doing so we can run a single instance of phantom js to server multiple static sites
+
 
 Requirements
 ============
@@ -109,7 +113,25 @@ To detect that, just look for an `_escaped_fragment_` in the query args.
 
 For instance with Nginx:
 ```
-if ($args ~ _escaped_fragment_) {
-    # Proxy to PhantomJS instance here
+# Production config
+server {
+  server_name <%= server_name %> default;
+  listen <%= server_port %>;
+   
+  location / {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header Host $http_host;
+
+    # If not search enging pass static
+    root "<%= base_dir %>";
+    
+    if ($args ~ _escaped_fragment_) {
+      proxy_pass http://localhost:8888;
+      break;
+    }
+
+    try_files $uri $uri/ /index.html;
+  }
 }
 ```

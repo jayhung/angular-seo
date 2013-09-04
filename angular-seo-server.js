@@ -1,24 +1,12 @@
 var system = require('system');
 
-if (system.args.length < 3) {
+if (system.args.length < 2) {
     console.log("Missing arguments.");
     phantom.exit();
 }
 
 var server = require('webserver').create();
 var port = parseInt(system.args[1]);
-var urlPrefix = system.args[2];
-
-var parse_qs = function(s) {
-    var queryString = {};
-    var a = document.createElement("a");
-    a.href = s;
-    a.search.replace(
-        new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-        function($0, $1, $2, $3) { queryString[$1] = $3; }
-    );
-    return queryString;
-};
 
 var renderHtml = function(url, cb) {
     var page = require('webpage').create();
@@ -45,11 +33,10 @@ var renderHtml = function(url, cb) {
 };
 
 server.listen(port, function (request, response) {
-    var route = parse_qs(request.url)._escaped_fragment_;
-    var url = urlPrefix
-      + request.url.slice(1, request.url.indexOf('?'))
-      + '#!' + route;
-    renderHtml(url, function(html) {
+    var url = request.url;
+    var route = url.replace("?_escaped_fragment_=","#");
+    
+    renderHtml('http://' + request.headers.Host + route, function(html) {
         response.statusCode = 200;
         response.write(html);
         response.close();
