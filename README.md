@@ -3,9 +3,9 @@ Angular-SEO
 
 SEO for AngularJS apps made easy. Based on [PhantomJS](http://phantomjs.org/) and [yearofmoo's article](http://www.yearofmoo.com/2012/11/angularjs-and-seo.html).
 
-This version has an updated and detailed Nginx file that passes request information to phantomjs
+This version has an updated with a detailed Nginx file that passes request Host information to phantomjs.
 
-Doing so we can run a single instance of phantom js to server multiple static sites
+So only one instance of phantomjs is required to server multiple static sites.
 
 
 Requirements
