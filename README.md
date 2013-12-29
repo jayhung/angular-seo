@@ -7,6 +7,7 @@ This version has an updated with a detailed Nginx file that passes request Host 
 
 So only one instance of phantomjs is required to server multiple static sites.
 
+Note: it can also be used to serve a single website if a URL is passed in start parameters
 
 Requirements
 ============
@@ -71,9 +72,17 @@ PhantomJS Module
 
 For the app to be properly rendered, you will need to run the `angular-seo-server.js` with PhantomJS.
 Make sure to disable caching:
+
+To serve a snapshot of a single website, use
 ```
 $ phantomjs --disk-cache=no angular-seo-server.js [port] [URL prefix]
 ```
+
+To serve multiple website using a single instance of phantomJS, just dont pass a URL prefix
+```
+$ phantomjs --disk-cache=no angular-seo-server.js [port]
+```
+
 
 `URL prefix` is the URL that will be prepended to the path the crawlers will try to get.
 

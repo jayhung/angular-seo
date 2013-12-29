@@ -1,6 +1,10 @@
 var system = require('system');
 
-if (system.args.length < 2) {
+if (system.args.length == 3) {
+    console.log("NOTE: Running in single site mode, snapping only "+system.args[2]);
+} else if (system.args.length == 2) {
+    console.log("NOTE: Running in Nginx mode, snapping urls in Host header");
+} else {
     console.log("Missing arguments.");
     phantom.exit();
 }
@@ -34,9 +38,12 @@ var renderHtml = function(url, cb) {
 };
 
 server.listen(port, function (request, response) {
-    var urlPrefix = 'http://' + request.headers.Host;
+    var host = request.headers.Host;
+    var urlPrefix = (typeof system.args[2] == 'undefined') ? 'http://' + host : system.args[2];
     var route = request.url.replace("?_escaped_fragment_=","#");
     var url = urlPrefix + decodeURIComponent(route);
+    
+
     renderHtml(url , function(html) {
         response.statusCode = 200;
         response.write(html);
