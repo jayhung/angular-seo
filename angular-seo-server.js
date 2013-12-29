@@ -12,31 +12,32 @@ var renderHtml = function(url, cb) {
     var page = require('webpage').create();
     page.settings.loadImages = false;
     page.settings.localToRemoteUrlAccessEnabled = true;
+    
     page.onCallback = function() {
         cb(page.content);
         page.close();
     };
-//    page.onConsoleMessage = function(msg, lineNum, sourceId) {
-//        console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
-//    };
+    
+    // page.onConsoleMessage = function(msg, lineNum, sourceId) {
+    //    console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+    // };
+    
     page.onInitialized = function() {
        page.evaluate(function() {
-            document.addEventListener('__htmlReady__', function() {
-                window.callPhantom();
-            }, false);
             setTimeout(function() {
                 window.callPhantom();
             }, 10000);
         });
     };
+    
     page.open(url);
 };
 
 server.listen(port, function (request, response) {
-    var url = request.url;
-    var route = url.replace("?_escaped_fragment_=","#");
-    
-    renderHtml('http://' + request.headers.Host + route, function(html) {
+    var urlPrefix = 'http://' + request.headers.Host;
+    var route = request.url.replace("?_escaped_fragment_=","#");
+    var url = urlPrefix + decodeURIComponent(route);
+    renderHtml(url , function(html) {
         response.statusCode = 200;
         response.write(html);
         response.close();
